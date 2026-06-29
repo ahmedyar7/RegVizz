@@ -91,7 +91,7 @@ export default function App() {
               borderRadius: "6px",
               cursor: "pointer",
               fontWeight: "bold",
-              color: "#fff",
+              color: "#ffff",
               display: "flex",
               alignItems: "center",
               gap: "5px",
