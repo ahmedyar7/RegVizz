@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import AutomatonGraph from "./AutomatonGraph";
 import { Search, Cpu } from "lucide-react";
 
+const IS_DEVELOPMENT = import.meta.env.DEV;
+const API_BASE_URL = IS_DEVELOPMENT ? "http://127.0.0.1:8000" : "";
+
 export default function App() {
   const [regex, setRegex] = useState("a(b|c)*");
   const [data, setData] = useState(null);
@@ -18,9 +21,8 @@ export default function App() {
     try {
       // Connecting to your running FastAPI backend query parameter endpoint
       const response = await fetch(
-        `http://127.0.0.1:8000/compile/both?regex=${encodeURIComponent(regex)}`,
+        `${API_BASE_URL}/api/compile/both?regex=${encodeURIComponent(regex)}`,
       );
-
       if (!response.ok) {
         const errDetail = await response.json();
         throw new Error(errDetail.detail || "Failed to parse regex");
