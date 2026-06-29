@@ -1,5 +1,4 @@
 from regex_engine import (
-    Fragment,
     extract_alphabet,
     regex_2_postfix,
     serialize_dfa_to_graph,
