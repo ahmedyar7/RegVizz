@@ -1,15 +1,14 @@
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.middleware.cors import CORSMiddleware
-
 from regex_engine import (
+    Fragment,
+    extract_alphabet,
     regex_2_postfix,
+    serialize_dfa_to_graph,
+    serialize_nfa_to_graph,
     postfix_2_nfa,
     nfa_2_dfa,
-    Fragment,
-    serialize_nfa_to_graph,
-    serialize_dfa_to_graph,
-    extract_alphabet,
 )
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
     title="Regex Automation Engine Too",
