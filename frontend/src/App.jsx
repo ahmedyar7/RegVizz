@@ -76,7 +76,8 @@ export default function App() {
               border: "none",
               width: "250px",
               fontSize: "1rem",
-              color: "#ffffff",
+              color: "#000000",
+              background:"#ffffff"
             }}
           />
           <button
