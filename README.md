@@ -35,7 +35,8 @@ Currently in development. The immediate goal is a working deployment of the core
 - Regex → NFA conversion (Thompson's Construction)
 - NFA → DFA conversion (Subset Construction)
 - Graph rendering on the frontend
-- Deployment setup
+- Deployment setup [DONE] with this after such pain stacking hours finally some working version of my project 
+- Next up making this student friendly 
 
 ---
 
