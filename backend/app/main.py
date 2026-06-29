@@ -16,22 +16,28 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Allow localhost for local development
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-def get_compiled_nfa(regex_str: str) -> Fragment:
-    try:
-        postfix = regex_2_postfix(regex_str)
-        return postfix_2_nfa(postfix)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid Regex Str {e}")
 
+
+
+@app.post("/api/compile")
+def compile_regex(data: dict):
+    # Your Thompson's Construction / NFA execution logic here
+    return {"status": "success", "data": "automaton_graph_data"}
 
 @app.get("/compile/nfa")
 def compile_to_nfa(
