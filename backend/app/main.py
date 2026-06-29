@@ -20,8 +20,8 @@ app = FastAPI(
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
+    "https://regvizz.vercel.app",
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -36,44 +36,56 @@ def compile_regex(data: dict):
     return {"status": "success", "data": "automaton_graph_data"}
 
 
-@app.get("/compile/nfa")
+# Fix 2: Prepend '/api' to your FastAPI decorators so they match vercel's edge proxies
+@app.get("/api/compile/nfa")
 def compile_to_nfa(
     regex: str = Query(..., description="The regular expression string")
 ):
-    postfix = regex_2_postfix(regex)
-    nfa_root = postfix_2_nfa(postfix)
-    return serialize_nfa_to_graph(nfa_root)
+    try:
+        postfix = regex_2_postfix(regex)
+        nfa_root = postfix_2_nfa(postfix)
+        return serialize_nfa_to_graph(nfa_root)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/compile/dfa")
+@app.get("/api/compile/dfa")
 def compile_to_dfa(
     regex: str = Query(..., description="The regular expression string")
 ):
-    postfix = regex_2_postfix(regex)
-    nfa_root = postfix_2_nfa(postfix)
-    alphabet = extract_alphabet(regex)
-    dfa_table, dfa_accepting = nfa_2_dfa(nfa_root, alphabet)
-    return serialize_dfa_to_graph(dfa_table, dfa_accepting)
+    try:
+        postfix = regex_2_postfix(regex)
+        nfa_root = postfix_2_nfa(postfix)
+        alphabet = extract_alphabet(regex)
+        dfa_table, dfa_accepting = nfa_2_dfa(nfa_root, alphabet)
+        return serialize_dfa_to_graph(dfa_table, dfa_accepting)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
-@app.get("/compile/both")
+@app.get("/api/compile/both")
 def compile_both(regex: str = Query(..., description="Regular expression string")):
-    postfix = regex_2_postfix(regex)
-    nfa_root = postfix_2_nfa(postfix)
-    alphabet = extract_alphabet(regex)
-    dfa_table, dfa_accepting = nfa_2_dfa(nfa_root, alphabet)
-    return {
-        "regex": regex,
-        "postfix": postfix,
-        "nfa": serialize_nfa_to_graph(nfa_root),
-        "dfa": serialize_dfa_to_graph(dfa_table, dfa_accepting),
-    }
+    try:
+        postfix = regex_2_postfix(regex)
+        nfa_root = postfix_2_nfa(postfix)
+        alphabet = extract_alphabet(regex)
+        dfa_table, dfa_accepting = nfa_2_dfa(nfa_root, alphabet)
+        return {
+            "regex": regex,
+            "postfix": postfix,
+            "nfa": serialize_nfa_to_graph(nfa_root),
+            "dfa": serialize_dfa_to_graph(dfa_table, dfa_accepting),
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=400, detail=f"Engine compilation failed: {str(e)}"
+        )
 
 
 if __name__ == "__main__":
     uvicorn.run(
-        "main:app",  # "filename:app_instance"
+        "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,  # auto-reload on file changes (dev only)
+        reload=True,
     )
