@@ -20,8 +20,7 @@ def add_concat_2_regex(regex: str) -> str:
     return "".join(results)
 
 
-regex = "a(b|c)*"
-print(add_concat_2_regex(regex))
+
 
 
 def regex_2_postfix(regex: str) -> str:

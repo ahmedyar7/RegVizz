@@ -9,9 +9,10 @@ from regex_engine import (
 )
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
 app = FastAPI(
-    title="Regex Automation Engine Too",
+    title="Regex Automation Engine",
     description="NFA & DFA generation based upon the regular expression",
     version="1.0.0",
 )
@@ -31,13 +32,10 @@ app.add_middleware(
 )
 
 
-
-
-
 @app.post("/api/compile")
 def compile_regex(data: dict):
-    # Your Thompson's Construction / NFA execution logic here
     return {"status": "success", "data": "automaton_graph_data"}
+
 
 @app.get("/compile/nfa")
 def compile_to_nfa(
@@ -45,32 +43,38 @@ def compile_to_nfa(
 ):
     postfix = regex_2_postfix(regex)
     nfa_root = postfix_2_nfa(postfix)
-
     return serialize_nfa_to_graph(nfa_root)
 
 
 @app.get("/compile/dfa")
-def compile_to_dfa(regex: str = Query(..., description="The Regular Expresion string")):
+def compile_to_dfa(
+    regex: str = Query(..., description="The regular expression string")
+):
     postfix = regex_2_postfix(regex)
     nfa_root = postfix_2_nfa(postfix)
-
     alphabet = extract_alphabet(regex)
     dfa_table, dfa_accepting = nfa_2_dfa(nfa_root, alphabet)
-
     return serialize_dfa_to_graph(dfa_table, dfa_accepting)
 
 
 @app.get("/compile/both")
-def compile_both(regex: str = Query(..., description="Regular Expression sring")):
+def compile_both(regex: str = Query(..., description="Regular expression string")):
     postfix = regex_2_postfix(regex)
     nfa_root = postfix_2_nfa(postfix)
-
     alphabet = extract_alphabet(regex)
     dfa_table, dfa_accepting = nfa_2_dfa(nfa_root, alphabet)
-
     return {
         "regex": regex,
         "postfix": postfix,
         "nfa": serialize_nfa_to_graph(nfa_root),
         "dfa": serialize_dfa_to_graph(dfa_table, dfa_accepting),
     }
+
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "main:app",  # "filename:app_instance"
+        host="0.0.0.0",
+        port=8000,
+        reload=True,  # auto-reload on file changes (dev only)
+    )
