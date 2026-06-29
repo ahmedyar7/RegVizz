@@ -31,12 +31,12 @@ app.add_middleware(
 )
 
 
-@app.post("/api/compile")
-def compile_regex(data: dict):
-    return {"status": "success", "data": "automaton_graph_data"}
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok"}
 
 
-# Fix 2: Prepend '/api' to your FastAPI decorators so they match vercel's edge proxies
+# Note: '/api' is prepended to every route so they match Vercel's edge proxies
 @app.get("/api/compile/nfa")
 def compile_to_nfa(
     regex: str = Query(..., description="The regular expression string")
@@ -84,7 +84,7 @@ def compile_both(regex: str = Query(..., description="Regular expression string"
 
 if __name__ == "__main__":
     uvicorn.run(
-        "main:app",
+        "app.main:app",
         host="0.0.0.0",
         port=8000,
         reload=True,
