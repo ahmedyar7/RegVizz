@@ -5,7 +5,7 @@ from fastapi import HTTPException
 def add_concat_2_regex(regex: str) -> str:
     """This function is responsible for adding (.) to the regular expression"""
 
-    operators = {"*", "|", "(", ")"}
+    operators = {"*", "|", "(", ")","."}
     results = []
 
     for i in range(len(regex)):
