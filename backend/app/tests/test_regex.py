@@ -1,5 +1,5 @@
 import pytest
-from regex_engine import regex_2_postfix, extract_alphabet, add_concat_2_regex
+from regex_engine import add_concat_2_regex
 
 # test for add_concat_2_regex
 

@@ -1,3 +1,6 @@
+from fastapi import HTTPException
+
+
 # Adding Concatenation to the Regular Expression
 def add_concat_2_regex(regex: str) -> str:
     """This function is responsible for adding (.) to the regular expression"""
@@ -20,7 +23,57 @@ def add_concat_2_regex(regex: str) -> str:
     return "".join(results)
 
 
+# ==== Regex Validation ==== #
+def validate_regex(regex: str) -> None:
+    """Validate the Regular expression mathematically and raise HTTPException"""
 
+    if not regex:
+        raise HTTPException(status_code=400, detail="The Regex cannot be empty")
+
+    # Balance parenthesis
+    balance = 0
+
+    for char in regex:
+        if char == "(":
+            balance += 1
+
+        elif char == ")":
+            balance -= 1
+
+        if balance < 0:
+            raise HTTPException(status_code=400, detail="Unbalanced Parenthesis")
+
+    if balance != 0:
+        raise HTTPException(status_code=400, detail="Unbalanced Parenthesis")
+
+    # empty parenthesis.
+    if "()" in regex:
+        raise HTTPException(status_code=400, detail="Empty parenthesis are not allowed")
+
+    # invalid start and end
+    if regex[0] in {"|", "*"}:
+        raise HTTPException(
+            status_code=400, detail="Regex cannot start with an operator"
+        )
+
+    if regex[-1] == "|":
+        raise HTTPException(
+            status_code=400, detail="Regex cannot end with the aletration"
+        )
+
+    # Invalid combinations.
+    invalid_combos = {
+        "||": "Consecutive aletration are not allowed",
+        "(*": "Kleen start followed by opening parenthsis",
+        "(|": "Opening parenthesis followed by aletration",
+        "|)": "Closing parenthesis followed by aletration",
+        "|*": "Aletratino followed by kleen start",
+        "**": "Consecutive kleen star",
+    }
+
+    for combo, reason in invalid_combos.items():
+        if combo in regex:
+            raise HTTPException(status_code=400, detail=f"Invalid syntax: {reason}")
 
 
 def regex_2_postfix(regex: str) -> str:

@@ -9,16 +9,79 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // ==== Regular Expression Validation ==== //
+
+  const validateRegex = (pattern) => {
+    if (!pattern) {
+      return "The Pattern cannot be empty";
+    }
+
+    // Check for balanced parenthesis.
+    let balance = 0;
+
+    for (let char of pattern) {
+      if (char == "(") balance++;
+      if (char == ")") balance--;
+
+      if (balance < 0) return "Unbalanced Parenthsis extra closing bracket";
+    }
+
+    if (balance !== 0)
+      return "Unbalanced Parenthesis: Missing closing parenthesis";
+
+    // Checking for empty parenthesis.
+    if (/\(\)/.test(pattern)) return "Empty Parenthesis are not allowed";
+
+    // Invalid starting or ending parenthesis.
+    if (/^[|*]/.test(pattern))
+      return "Regex cannot start with an operator ('|' or '*').";
+
+    if (/\|$/.test(pattern))
+      return "Regex cannot start with an Alternation symbol";
+
+    // Checking for invalid operator combinations
+
+    if (/\|\|/.test(pattern)) return "Consecutive Alternation are not allowed";
+
+    if (/\(\*/.test(pattern))
+      return "Kleen star cannot be used directly into the ";
+
+    if (/\(\|/.test(pattern))
+      return "Aletration operator cannot be used directly followed by opening parenthesis.";
+
+    if (/\|\)/.test(pattern))
+      return "Aletration operator cannot be used directly after closing parenthesis. ";
+
+    if (/\|\*/.test(pattern))
+      return "Kleen star cannot be used directly after the aletration closure. ";
+
+    if (/\*\*/.test(pattern)) return "Consecutive kleen start are not allowed.";
+
+    // When no error is found.
+    return null;
+  };
+
   const handleCompile = async (e) => {
     e.preventDefault();
-    if (!regex.trim()) return;
+    const cleanRegex = regex.trim();
+    if (!cleanRegex) return;
+
+    // ==== Running the Validation checks ==== //
+
+    const validationError = validateRegex(cleanRegex);
+    console.log(validationError)
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
 
     setLoading(true);
     setError("");
 
     try {
       // Connecting to the FastAPI backend; see src/api.js for the endpoint.
-      const result = await compileBoth(regex);
+      const result = await compileBoth(cleanRegex);
       setData(result);
     } catch (err) {
       setError(err.message);
@@ -67,7 +130,7 @@ export default function App() {
               width: "250px",
               fontSize: "1rem",
               color: "#000000",
-              background:"#ffffff"
+              background: "#ffffff",
             }}
           />
           <button

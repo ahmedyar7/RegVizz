@@ -5,6 +5,7 @@ from .regex_engine import (
     serialize_nfa_to_graph,
     postfix_2_nfa,
     nfa_2_dfa,
+    validate_regex,
 )
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,8 +27,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
     allow_headers=["*"],
+    allow_methods=["*"],
 )
 
 
@@ -65,17 +66,23 @@ def compile_to_dfa(
 
 @app.get("/api/compile/both")
 def compile_both(regex: str = Query(..., description="Regular expression string")):
+
+    # --- Validate Regex --- #
+    validate_regex(regex)
+
     try:
         postfix = regex_2_postfix(regex)
         nfa_root = postfix_2_nfa(postfix)
         alphabet = extract_alphabet(regex)
         dfa_table, dfa_accepting = nfa_2_dfa(nfa_root, alphabet)
+
         return {
             "regex": regex,
             "postfix": postfix,
             "nfa": serialize_nfa_to_graph(nfa_root),
             "dfa": serialize_dfa_to_graph(dfa_table, dfa_accepting),
         }
+
     except Exception as e:
         raise HTTPException(
             status_code=400, detail=f"Engine compilation failed: {str(e)}"
