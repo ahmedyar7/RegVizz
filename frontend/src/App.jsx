@@ -55,7 +55,7 @@ export default function App() {
     if (/\|\*/.test(pattern))
       return "Kleen star cannot be used directly after the aletration closure. ";
 
-    if (/\*\*/.test(pattern)) return "Consecutive kleen start are not allowed.";
+    if (/\*\*/.test(pattern)) return "Consecutive Kleen start are not allowed.";
 
     // When no error is found.
     return null;
